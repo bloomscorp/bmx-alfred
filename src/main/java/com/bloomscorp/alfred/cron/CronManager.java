@@ -12,13 +12,14 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class CronManager<
+	B extends LogBook<L, A, T, E>,
 	L extends Log,
 	A extends AuthenticationLog,
 	T extends NVerseTenant<E>,
 	E extends Enum<E>
 > {
 
-	private final LogBook<L, A, T, E> logBook;
+	private final B logBook;
 
 	public void scheduleLoginLogTask(T user) {
 		new Thread(
