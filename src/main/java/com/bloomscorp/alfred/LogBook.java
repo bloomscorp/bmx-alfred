@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@AllArgsConstructor(onConstructor = @__({@Autowired}))
+@AllArgsConstructor
 public abstract class LogBook<
 	A extends AuthenticationLog,
 	L extends Log,
