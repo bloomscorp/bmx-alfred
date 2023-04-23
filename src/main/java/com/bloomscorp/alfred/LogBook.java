@@ -12,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
 
 @AllArgsConstructor
 public abstract class LogBook<
-	A extends AuthenticationLog,
 	L extends Log,
+	A extends AuthenticationLog,
 	T extends NVerseTenant<E>,
 	E extends Enum<E>
 > {

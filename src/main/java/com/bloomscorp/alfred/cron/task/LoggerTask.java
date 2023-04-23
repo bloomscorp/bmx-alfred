@@ -9,8 +9,8 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public final class LoggerTask<
-	A extends AuthenticationLog,
 	L extends Log,
+	A extends AuthenticationLog,
 	T extends NVerseTenant<E>,
 	E extends Enum<E>
 > implements Runnable {
@@ -19,7 +19,7 @@ public final class LoggerTask<
 	private final String logger;
 	private final LOG_TYPE type;
 	private final String dataDump;
-	private final LogBook<A, L, T, E> logBook;
+	private final LogBook<L, A, T, E> logBook;
 
 	@Override
 	public void run() {

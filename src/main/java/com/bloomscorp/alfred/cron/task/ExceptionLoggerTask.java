@@ -8,8 +8,8 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public final class ExceptionLoggerTask<
-	A extends AuthenticationLog,
 	L extends Log,
+	A extends AuthenticationLog,
 	T extends NVerseTenant<E>,
 	E extends Enum<E>
 > implements Runnable {
@@ -17,7 +17,7 @@ public final class ExceptionLoggerTask<
 	private final Exception exception;
 	private final String message;
 	private final String logger;
-	private final LogBook<A, L, T, E> logBook;
+	private final LogBook<L, A, T, E> logBook;
 
 	@Override
 	public void run() {

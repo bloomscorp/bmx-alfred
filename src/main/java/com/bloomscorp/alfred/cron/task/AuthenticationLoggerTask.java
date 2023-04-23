@@ -8,14 +8,14 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public final class AuthenticationLoggerTask<
-	A extends AuthenticationLog,
 	L extends Log,
+	A extends AuthenticationLog,
 	T extends NVerseTenant<E>,
 	E extends Enum<E>
 > implements Runnable {
 
 	private final T user;
-	private final LogBook<A, L, T, E> logBook;
+	private final LogBook<L, A, T, E> logBook;
 	private final boolean isLogin;
 
 	@Override
