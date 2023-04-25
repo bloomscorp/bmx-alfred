@@ -3,6 +3,7 @@ package com.bloomscorp.alfred;
 import com.bloomscorp.alfred.adapter.ILogBookDAO;
 import com.bloomscorp.alfred.configuration.GsonExclusionStrategy;
 import com.bloomscorp.alfred.orm.*;
+import com.bloomscorp.nverse.pojo.NVerseRole;
 import com.bloomscorp.nverse.pojo.NVerseTenant;
 import com.bloomscorp.pastebox.Pastebox;
 import com.google.gson.Gson;
@@ -14,8 +15,9 @@ import org.jetbrains.annotations.NotNull;
 public abstract class LogBook<
 	L extends Log,
 	A extends AuthenticationLog,
-	T extends NVerseTenant<E>,
-	E extends Enum<E>
+	T extends NVerseTenant<E, R>,
+	E extends Enum<E>,
+	R extends NVerseRole<E>
 > {
 
 	private static final String CAUSE_SEPARATOR = " [ CAUSE ] ";
