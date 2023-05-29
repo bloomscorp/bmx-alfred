@@ -29,7 +29,12 @@ public abstract class LogBook<
 	private final ILogBookDAO<A, L> repository;
 
 	private void logAuthentication(AUTH_ACTION_ENUM action, T user) {
-		this.repository.insertAuthenticationLog(this.buildAuthenticationLogInstance());
+		this.repository.insertAuthenticationLog(
+			this.buildAuthenticationLogInstance(
+				action,
+				user
+			)
+		);
 	}
 
 	public String prepareLogReporter(@NotNull T user, String reporterID) {
@@ -59,7 +64,14 @@ public abstract class LogBook<
 	}
 
 	public void log(String message, String logger, LOG_TYPE type, String dataDump) {
-		this.repository.insertLog(this.buildLogInstance());
+		this.repository.insertLog(
+			this.buildLogInstance(
+				logger,
+				type,
+				message,
+				dataDump
+			)
+		);
 	}
 
 	public void log(Exception exception, String message, String logger) {
@@ -74,6 +86,11 @@ public abstract class LogBook<
 		);
 	}
 
-	public abstract L buildLogInstance();
-	public abstract A buildAuthenticationLogInstance();
+	public abstract L buildLogInstance(
+		String logger,
+		LOG_TYPE logType,
+		String message,
+		String dataDump
+	);
+	public abstract A buildAuthenticationLogInstance(AUTH_ACTION_ENUM action, T user);
 }
