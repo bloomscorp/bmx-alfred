@@ -9,13 +9,13 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.5</version>
+        <version>3.1.2</version>
         <relativePath/>
     </parent>
 
     <groupId>com.bloomscorp</groupId>
     <artifactId>bmx-alfred</artifactId>
-    <version>0.0.8</version>
+    <version>0.0.9</version>
     <packaging>jar</packaging>
     <inceptionYear>2023</inceptionYear>
     <url>https://github.com/bloomscorp/bmx-alfred</url>
@@ -77,7 +77,7 @@
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>8.0.0.Final</version>
+            <version>8.0.1.Final</version>
         </dependency>
         <dependency>
             <groupId>com.vladmihalcea</groupId>
@@ -87,7 +87,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.26</version>
+            <version>1.18.28</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -109,7 +109,7 @@
         <dependency>
             <groupId>com.bloomscorp</groupId>
             <artifactId>bmx-nverse</artifactId>
-            <version>0.0.18-UNSTABLE</version>
+            <version>0.0.29</version>
         </dependency>
     </dependencies>
 
