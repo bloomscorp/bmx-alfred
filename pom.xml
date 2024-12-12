@@ -8,7 +8,7 @@
 
     <groupId>com.bloomscorp</groupId>
     <artifactId>bmx-alfred</artifactId>
-    <version>0.0.13</version>
+    <version>0.0.14</version>
     <packaging>jar</packaging>
     <inceptionYear>2023</inceptionYear>
     <url>https://github.com/bloomscorp/bmx-alfred</url>
@@ -85,7 +85,7 @@
         <dependency>
             <groupId>com.bloomscorp</groupId>
             <artifactId>bmx-nverse</artifactId>
-            <version>0.0.38</version>
+            <version>0.0.48</version>
         </dependency>
     </dependencies>
 
