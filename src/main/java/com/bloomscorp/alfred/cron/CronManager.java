@@ -11,6 +11,31 @@ import com.bloomscorp.nverse.pojo.NVerseRole;
 import com.bloomscorp.nverse.pojo.NVerseTenant;
 import lombok.AllArgsConstructor;
 
+/**
+ * Dispatches logging tasks asynchronously by spawning a dedicated thread per log operation.
+ *
+ * <p>This class acts as the non-blocking entry point for all Alfred logging calls. Each
+ * {@code schedule*} method wraps the corresponding {@link LogBook} operation in a
+ * {@link Runnable} task and starts a new {@link Thread}, ensuring that log persistence
+ * does not block the calling thread.
+ *
+ * <p>This approach is suited for high-throughput request paths where synchronous I/O to
+ * a log store would introduce unacceptable latency. Be aware that threads are not pooled;
+ * in very high-frequency environments, consider wrapping log calls with a thread pool
+ * or queue-based approach.
+ *
+ * @param <B> the concrete {@link LogBook} implementation
+ * @param <L> the concrete {@link Log} entity type
+ * @param <A> the concrete {@link AuthenticationLog} entity type
+ * @param <T> the concrete {@link NVerseTenant} type representing the authenticated user
+ * @param <E> the enum type representing application roles
+ * @param <R> the concrete {@link NVerseRole} type bound to the role enum
+ *
+ * @see LogBook
+ * @see AuthenticationLoggerTask
+ * @see LoggerTask
+ * @see ExceptionLoggerTask
+ */
 @AllArgsConstructor
 public class CronManager<
 	B extends LogBook<L, A, T, E, R>,
@@ -21,8 +46,19 @@ public class CronManager<
 	R extends NVerseRole<E>
 > {
 
+	/**
+	 * The {@link LogBook} instance to which all logging tasks are delegated.
+	 * Must not be null.
+	 */
 	private final B logBook;
 
+	/**
+	 * Asynchronously records a login event for the given user.
+	 *
+	 * <p>Spawns a new thread that calls {@link LogBook#logLogin} on the underlying log book.
+	 *
+	 * @param user the tenant who logged in; must not be null
+	 */
 	public void scheduleLoginLogTask(T user) {
 		new Thread(
 			new AuthenticationLoggerTask<>(
@@ -33,6 +69,13 @@ public class CronManager<
 		).start();
 	}
 
+	/**
+	 * Asynchronously records a logout event for the given user.
+	 *
+	 * <p>Spawns a new thread that calls {@link LogBook#logLogout} on the underlying log book.
+	 *
+	 * @param user the tenant who logged out; must not be null
+	 */
 	public void scheduleLogoutLogTask(T user) {
 		new Thread(
 			new AuthenticationLoggerTask<>(
@@ -43,6 +86,18 @@ public class CronManager<
 		).start();
 	}
 
+	/**
+	 * Asynchronously persists a structured log entry with the specified severity and data dump.
+	 *
+	 * <p>Spawns a new thread that calls {@link LogBook#log(String, String, LOG_TYPE, String)}
+	 * on the underlying log book.
+	 *
+	 * @param message  the human-readable log message; must not be null
+	 * @param logger   the identifier of the component producing the log,
+	 *                 conventionally {@code "ClassName#methodName"}; must not be null
+	 * @param type     the severity/category of the log entry; must not be null
+	 * @param dataDump optional serialized context data (JSON, request body, etc.); may be null or empty
+	 */
 	public void scheduleLogTask(String message, String logger, LOG_TYPE type, String dataDump) {
 		new Thread(
 			new LoggerTask<>(
@@ -55,6 +110,17 @@ public class CronManager<
 		).start();
 	}
 
+	/**
+	 * Asynchronously persists an error log entry for a caught exception including the full stack trace.
+	 *
+	 * <p>Spawns a new thread that calls {@link LogBook#log(Exception, String, String)} on the
+	 * underlying log book. The log type is always {@link com.bloomscorp.alfred.orm.LOG_TYPE#ERROR}.
+	 *
+	 * @param exception the caught exception to record; must not be null
+	 * @param message   contextual description of where or why the exception occurred; must not be null
+	 * @param logger    the identifier of the component catching the exception,
+	 *                  conventionally {@code "ClassName#methodName"}; must not be null
+	 */
 	public void scheduleExceptionLogTask(Exception exception, String message, String logger) {
 		new Thread(
 			new ExceptionLoggerTask<>(

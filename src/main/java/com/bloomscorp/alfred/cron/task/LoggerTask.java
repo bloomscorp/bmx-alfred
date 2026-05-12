@@ -8,6 +8,23 @@ import com.bloomscorp.nverse.pojo.NVerseRole;
 import com.bloomscorp.nverse.pojo.NVerseTenant;
 import lombok.AllArgsConstructor;
 
+/**
+ * Runnable task that persists a structured log entry via {@link LogBook}.
+ *
+ * <p>Instances of this class are created and started by {@link com.bloomscorp.alfred.cron.CronManager}
+ * to perform general log persistence asynchronously. The task delegates to
+ * {@link LogBook#log(String, String, LOG_TYPE, String)}.
+ *
+ * @param <B> the concrete {@link LogBook} implementation
+ * @param <L> the concrete {@link Log} entity type
+ * @param <A> the concrete {@link AuthenticationLog} entity type
+ * @param <T> the concrete {@link NVerseTenant} type representing the authenticated user
+ * @param <E> the enum type representing application roles
+ * @param <R> the concrete {@link NVerseRole} type bound to the role enum
+ *
+ * @see com.bloomscorp.alfred.cron.CronManager
+ * @see LogBook#log(String, String, LOG_TYPE, String)
+ */
 @AllArgsConstructor
 public final class LoggerTask<
 	B extends LogBook<L, A, T, E, R>,
@@ -18,12 +35,25 @@ public final class LoggerTask<
 	R extends NVerseRole<E>
 > implements Runnable {
 
+	/** The human-readable log message. Must not be null. */
 	private final String message;
+
+	/** The identifier of the component producing the log, conventionally {@code "ClassName#methodName"}. */
 	private final String logger;
+
+	/** The severity or category of this log entry. Must not be null. */
 	private final LOG_TYPE type;
+
+	/** Optional serialized context data (e.g., JSON, request body); may be null or empty. */
 	private final String dataDump;
+
+	/** The log book to which the log entry is delegated. Must not be null. */
 	private final B logBook;
 
+	/**
+	 * Executes the log persistence operation by delegating to
+	 * {@link LogBook#log(String, String, LOG_TYPE, String)}.
+	 */
 	@Override
 	public void run() {
 		this.logBook.log(
