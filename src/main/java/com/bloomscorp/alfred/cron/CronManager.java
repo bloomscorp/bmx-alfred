@@ -13,6 +13,9 @@ import com.bloomscorp.nverse.pojo.NVerseRole;
 import com.bloomscorp.nverse.pojo.NVerseTenant;
 import lombok.AllArgsConstructor;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * Dispatches logging tasks asynchronously by spawning a dedicated thread per log operation.
  *
@@ -50,6 +53,8 @@ public class CronManager<
 	R extends NVerseRole<E>
 > {
 
+	private static final ExecutorService LOG_EXECUTOR = Executors.newFixedThreadPool(10);
+
 	/**
 	 * The {@link LogBook} instance to which all logging tasks are delegated.
 	 * Must not be null.
@@ -86,13 +91,13 @@ public class CronManager<
 	 * @param user the tenant who logged in; must not be null
 	 */
 	public void scheduleLoginLogTask(T user) {
-		new Thread(
+		LOG_EXECUTOR.submit(
 			new AuthenticationLoggerTask<>(
 				user,
 				this.logBook,
 				true
 			)
-		).start();
+		);
 	}
 
 	/**
@@ -103,13 +108,13 @@ public class CronManager<
 	 * @param user the tenant who logged out; must not be null
 	 */
 	public void scheduleLogoutLogTask(T user) {
-		new Thread(
+		LOG_EXECUTOR.submit(
 			new AuthenticationLoggerTask<>(
 				user,
 				this.logBook,
 				false
 			)
-		).start();
+		);
 	}
 
 	/**
@@ -129,7 +134,7 @@ public class CronManager<
 		if (this.apiKey != null && this.apiSecret != null && this.projectId != null) {
 			this.scheduleLogTask(message, logger, type, dataDump, this.apiKey, this.apiSecret, this.projectId);
 		} else {
-			new Thread(
+			LOG_EXECUTOR.submit(
 				new LoggerTask<>(
 					message,
 					logger,
@@ -137,7 +142,7 @@ public class CronManager<
 					dataDump,
 					this.logBook
 				)
-			).start();
+			);
 		}
 	}
 
@@ -157,7 +162,7 @@ public class CronManager<
 	 * @param projectId the project identifier
 	 */
 	public void scheduleLogTask(String message, String logger, LOG_TYPE type, String dataDump, String apiKey, String apiSecret, String projectId) {
-		new Thread(
+		LOG_EXECUTOR.submit(
 			new ApiLoggerTask<>(
 				message,
 				logger,
@@ -168,7 +173,7 @@ public class CronManager<
 				projectId,
 				this.logBook
 			)
-		).start();
+		);
 	}
 
 	/**
@@ -188,14 +193,14 @@ public class CronManager<
 		if (this.apiKey != null && this.apiSecret != null && this.projectId != null) {
 			this.scheduleExceptionLogTask(exception, message, logger, this.apiKey, this.apiSecret, this.projectId);
 		} else {
-			new Thread(
+			LOG_EXECUTOR.submit(
 				new ExceptionLoggerTask<>(
 					exception,
 					message,
 					logger,
 					this.logBook
 				)
-			).start();
+			);
 		}
 	}
 
@@ -214,7 +219,7 @@ public class CronManager<
 	 * @param projectId the project identifier
 	 */
 	public void scheduleExceptionLogTask(Exception exception, String message, String logger, String apiKey, String apiSecret, String projectId) {
-		new Thread(
+		LOG_EXECUTOR.submit(
 			new ApiExceptionLoggerTask<>(
 				exception,
 				message,
@@ -224,6 +229,6 @@ public class CronManager<
 				projectId,
 				this.logBook
 			)
-		).start();
+		);
 	}
 }

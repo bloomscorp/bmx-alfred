@@ -9,7 +9,6 @@ import com.bloomscorp.pastebox.Pastebox;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
-import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.crypto.Mac;
@@ -81,17 +80,6 @@ public abstract class LogBook<
     public LogBook(ILogBookDAO<A, L> repository) {
         this.repository = repository;
         this.logServiceBaseUrl = "http://localhost:3000/log/";
-    }
-
-    /**
-     * Constructs a new LogBook with a repository and a custom log service base URL.
-     *
-     * @param repository        the repository used for local persistence
-     * @param logServiceBaseUrl the base URL of the logging service
-     */
-    public LogBook(ILogBookDAO<A, L> repository, String logServiceBaseUrl) {
-        this.repository = repository;
-        this.logServiceBaseUrl = logServiceBaseUrl != null ? logServiceBaseUrl : "http://localhost:3000/log/";
     }
 
     /**
@@ -340,10 +328,14 @@ public abstract class LogBook<
 
         String decodedDataDump = this.decodeDataDump(dataDump);
 
-        try {
-            logData.put("dataDump", JsonParser.parseString(decodedDataDump));
-        } catch (Exception e) {
-            logData.put("dataDump", decodedDataDump);
+        if (decodedDataDump != null) {
+            try {
+                logData.put("dataDump", JsonParser.parseString(decodedDataDump));
+            } catch (Exception e) {
+                logData.put("dataDump", decodedDataDump);
+            }
+        } else {
+            logData.put("dataDump", (Object) null);
         }
 
         String timestamp = String.valueOf(Pastebox.getCurrentTimeInMillis());
@@ -368,8 +360,7 @@ public abstract class LogBook<
             .exceptionally(ex -> {
                 this.log(message, logger, type, dataDump);
                 return null;
-            })
-            .join();
+            });
     }
 
     // TODO: implement
