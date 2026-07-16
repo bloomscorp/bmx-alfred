@@ -3,6 +3,7 @@ package com.bloomscorp.alfred;
 import com.bloomscorp.alfred.adapter.ILogBookDAO;
 import com.bloomscorp.alfred.configuration.GsonExclusionStrategy;
 import com.bloomscorp.alfred.orm.*;
+import com.bloomscorp.alfred.support.AlfredConstants;
 import com.bloomscorp.nverse.pojo.NVerseRole;
 import com.bloomscorp.nverse.pojo.NVerseTenant;
 import com.bloomscorp.pastebox.Pastebox;
@@ -73,13 +74,25 @@ public abstract class LogBook<
         .create();
 
     /**
-     * Constructs a new LogBook with a repository and a default log service base URL.
+     * Constructs a new LogBook with a repository, using {@link AlfredConstants#DEFAULT_LOGGER_SERVICE_BASE_URL}
+     * as the log service base URL.
      *
      * @param repository the repository used for local persistence
      */
     public LogBook(ILogBookDAO<A, L> repository) {
+        this(repository, AlfredConstants.DEFAULT_LOGGER_SERVICE_BASE_URL);
+    }
+
+    /**
+     * Constructs a new LogBook with a repository and an explicit log service base URL,
+     * e.g. sourced from a {@code @Value("${alfred.sync.baseUrl}")} property in the consuming app.
+     *
+     * @param repository  the repository used for local persistence
+     * @param loggerServiceBaseUrl the base URL of the logger service
+     */
+    public LogBook(ILogBookDAO<A, L> repository, String loggerServiceBaseUrl) {
         this.repository = repository;
-        this.logServiceBaseUrl = "http://localhost:3000/log/";
+        this.logServiceBaseUrl = loggerServiceBaseUrl + "/log/";
     }
 
     /**
